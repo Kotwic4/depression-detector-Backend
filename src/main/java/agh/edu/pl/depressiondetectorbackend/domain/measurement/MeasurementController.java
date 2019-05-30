@@ -3,17 +3,15 @@ package agh.edu.pl.depressiondetectorbackend.domain.measurement;
 import agh.edu.pl.depressiondetectorbackend.domain.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController("/api/measurement")
+@RestController
+@RequestMapping(value = "/api/measurement")
 public class MeasurementController {
     private final MeasurementRepository measurementRepository;
 
