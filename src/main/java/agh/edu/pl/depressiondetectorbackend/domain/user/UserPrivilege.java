@@ -1,4 +1,4 @@
-package agh.edu.pl.depressiondetectorbackend.domain;
+package agh.edu.pl.depressiondetectorbackend.domain.user;
 
 import agh.edu.pl.depressiondetectorbackend.security.AuthorizationRoles;
 import org.springframework.security.core.GrantedAuthority;

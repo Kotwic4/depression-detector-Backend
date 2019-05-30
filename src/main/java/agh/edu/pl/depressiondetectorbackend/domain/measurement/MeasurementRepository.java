@@ -1,5 +1,6 @@
-package agh.edu.pl.depressiondetectorbackend.domain;
+package agh.edu.pl.depressiondetectorbackend.domain.measurement;
 
+import agh.edu.pl.depressiondetectorbackend.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

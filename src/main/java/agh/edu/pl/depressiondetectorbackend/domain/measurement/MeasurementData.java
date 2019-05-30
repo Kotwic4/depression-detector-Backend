@@ -1,4 +1,4 @@
-package agh.edu.pl.depressiondetectorbackend.domain;
+package agh.edu.pl.depressiondetectorbackend.domain.measurement;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

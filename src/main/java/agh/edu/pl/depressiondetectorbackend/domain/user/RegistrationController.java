@@ -1,4 +1,4 @@
-package agh.edu.pl.depressiondetectorbackend.domain;
+package agh.edu.pl.depressiondetectorbackend.domain.user;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

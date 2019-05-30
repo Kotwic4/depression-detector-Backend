@@ -1,4 +1,4 @@
-package agh.edu.pl.depressiondetectorbackend.domain;
+package agh.edu.pl.depressiondetectorbackend.domain.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

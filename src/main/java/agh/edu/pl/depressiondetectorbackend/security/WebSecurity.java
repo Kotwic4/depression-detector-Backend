@@ -1,13 +1,12 @@
 package agh.edu.pl.depressiondetectorbackend.security;
 
 
-import agh.edu.pl.depressiondetectorbackend.domain.UserRepository;
+import agh.edu.pl.depressiondetectorbackend.domain.auth.SessionRepository;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * Defines request security.
@@ -27,21 +26,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
-    private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final SessionRepository sessionRepository;
 
-    public WebSecurity(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    public WebSecurity(SessionRepository sessionRepository) {
+        this.sessionRepository = sessionRepository;
     }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers("/api/registration/**").permitAll()
+                .antMatchers("/api/authentication/**").permitAll()
                 .antMatchers("/api/**").authenticated()
                 .and()
-                .addFilter(new TokenAuthorizationFilter(authenticationManager(), userRepository, bCryptPasswordEncoder))
+                .addFilter(new TokenAuthorizationFilter(authenticationManager(), sessionRepository))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 }

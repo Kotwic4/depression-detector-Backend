@@ -1,13 +1,14 @@
 package agh.edu.pl.depressiondetectorbackend.security;
 
-import agh.edu.pl.depressiondetectorbackend.domain.User;
-import agh.edu.pl.depressiondetectorbackend.domain.UserPrivilege;
-import agh.edu.pl.depressiondetectorbackend.domain.UserRepository;
+import agh.edu.pl.depressiondetectorbackend.domain.auth.AuthException;
+import agh.edu.pl.depressiondetectorbackend.domain.auth.Session;
+import agh.edu.pl.depressiondetectorbackend.domain.auth.SessionRepository;
+import agh.edu.pl.depressiondetectorbackend.domain.user.User;
+import agh.edu.pl.depressiondetectorbackend.domain.user.UserPrivilege;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -17,8 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Filter, that check if there is a authorization token in request and validate it.
@@ -35,26 +34,21 @@ import java.util.stream.Collectors;
  */
 public class TokenAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final SessionRepository sessionRepository;
 
-    TokenAuthorizationFilter(final AuthenticationManager authManager,
-                             final UserRepository userRepository,
-                             BCryptPasswordEncoder bCryptPasswordEncoder) {
+    TokenAuthorizationFilter(final AuthenticationManager authManager, SessionRepository sessionRepository) {
         super(authManager);
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.sessionRepository = sessionRepository;
     }
 
     @Override
     protected void doFilterInternal(final HttpServletRequest req,
                                     final HttpServletResponse res,
                                     final FilterChain chain) throws IOException, ServletException {
-        final String username = req.getHeader("username");
-        final String password = req.getHeader("password");
-        if (username != null && password != null) {
+        final String token = req.getHeader("token");
+        if (token != null) {
             try {
-                this.setAuthentication(username, password);
+                this.setAuthentication(token);
             } catch (AuthException e) {
                 res.sendError(e.getStatus().value(), e.getReason());
                 return;
@@ -63,16 +57,14 @@ public class TokenAuthorizationFilter extends BasicAuthenticationFilter {
         chain.doFilter(req, res);
     }
 
-    private void setAuthentication(final String username, final String password) throws AuthException {
-        final Authentication authentication = this.getAuthentication(username, password);
+    private void setAuthentication(final String token) throws AuthException {
+        final Authentication authentication = this.getAuthentication(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    private Authentication getAuthentication(final String username, final String password) throws AuthException {
-        User user = userRepository.findByUsername(username).orElseThrow(AuthException::new);
-        if (!bCryptPasswordEncoder.matches(password, user.getPassword())){
-            throw new AuthException();
-        }
+    private Authentication getAuthentication(final String token) throws AuthException {
+        Session session = sessionRepository.findByToken(token).orElseThrow(AuthException::new);
+        User user = session.getUser();
         final List<UserPrivilege> privileges = new ArrayList<>(user.getUserPrivileges());
         return new UsernamePasswordAuthenticationToken(user, user, privileges);
     }

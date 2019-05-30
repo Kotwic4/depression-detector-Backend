@@ -1,4 +1,4 @@
-package agh.edu.pl.depressiondetectorbackend.security;
+package agh.edu.pl.depressiondetectorbackend.domain.auth;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
